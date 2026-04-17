@@ -1,0 +1,69 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: el_recuerdo_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-el_recuerdo}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+      - ./scripts/init_db.sh:/docker-entrypoint-initdb.d/init_db.sh:ro
+      - ./scripts/backup.sh:/scripts/backup.sh:ro
+    command: >
+      postgres
+      -c wal_level=replica
+      -c max_wal_senders=5
+      -c hot_standby=on
+    networks:
+      - el_recuerdo_network
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: el_recuerdo_pgadmin
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-admin@example.com}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-admin}
+      PGADMIN_CONFIG_SERVER_MODE: 'false'
+    ports:
+      - "${PGADMIN_PORT:-5050}:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    networks:
+      - el_recuerdo_network
+
+  backup:
+    image: postgres:17-alpine
+    container_name: el_recuerdo_backup_scheduler
+    restart: unless-stopped
+    environment:
+      PGHOST: postgres
+      PGPORT: 5432
+      PGUSER: ${POSTGRES_USER:-postgres}
+      PGPASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      PGDATABASE: ${POSTGRES_DB:-el_recuerdo}
+      BACKUP_DIR: /backups
+      BACKUP_INTERVAL_SECONDS: 86400
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+      - ./scripts/backup.sh:/scripts/backup.sh:ro
+      - backup_volume:/backups
+    entrypoint: /scripts/backup.sh
+    networks:
+      - el_recuerdo_network
+
+volumes:
+  pg_data:
+    driver: local
+  pgadmin_data:
+    driver: local
+  backup_volume:
+    driver: local
+
+networks:
+  el_recuerdo_network:
+    driver: bridge
