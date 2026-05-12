@@ -1,0 +1,1 @@
+export { CalendarioSkeleton } from './CalendarioSkeleton';

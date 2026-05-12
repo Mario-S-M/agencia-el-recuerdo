@@ -10,6 +10,7 @@ import {
   HttpCode,
   HttpStatus,
   ParseUUIDPipe,
+  UseGuards,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -26,6 +27,9 @@ import {
   ApiNoContentResponse,
 } from '@nestjs/swagger';
 import { UsersService } from './users.service';
+import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
+import { RolesGuard } from '../common/guards/roles.guard';
+import { Roles } from '../common/decorators/roles.decorator';
 import {
   CreateUserDto,
   UpdateUserDto,
@@ -226,10 +230,12 @@ export class UsersController {
     return this.usersService.findByRole(rol);
   }
 
-  // Create new user
+  // Create new user (solo admin)
   @Post()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
   @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({ summary: 'Crear nuevo usuario' })
+  @ApiOperation({ summary: 'Crear nuevo usuario (solo administradores)' })
   @ApiBearerAuth()
   @ApiCreatedResponse({
     description: 'Usuario creado correctamente',
@@ -252,9 +258,11 @@ export class UsersController {
     return this.usersService.create(createUserDto);
   }
 
-  // Update user
+  // Update user (solo admin)
   @Patch(':id')
-  @ApiOperation({ summary: 'Actualizar usuario' })
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
+  @ApiOperation({ summary: 'Actualizar usuario (solo administradores)' })
   @ApiBearerAuth()
   @ApiParam({
     name: 'id',
@@ -286,10 +294,14 @@ export class UsersController {
     return this.usersService.update(id, updateUserDto);
   }
 
-  // Soft delete user
+  // Soft delete user (solo admin)
   @Delete(':id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
   @HttpCode(HttpStatus.NO_CONTENT)
-  @ApiOperation({ summary: 'Eliminar usuario (soft delete)' })
+  @ApiOperation({
+    summary: 'Eliminar usuario (soft delete, solo administradores)',
+  })
   @ApiBearerAuth()
   @ApiParam({
     name: 'id',
@@ -316,10 +328,14 @@ export class UsersController {
     return this.usersService.softDelete(id);
   }
 
-  // Restore user
+  // Restore user (solo admin)
   @Patch(':id/restore')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Restaurar usuario eliminado' })
+  @ApiOperation({
+    summary: 'Restaurar usuario eliminado (solo administradores)',
+  })
   @ApiBearerAuth()
   @ApiParam({
     name: 'id',
@@ -348,10 +364,14 @@ export class UsersController {
     return this.usersService.restore(id);
   }
 
-  // Permanent delete user
+  // Permanent delete user (solo admin)
   @Delete(':id/permanent')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
   @HttpCode(HttpStatus.NO_CONTENT)
-  @ApiOperation({ summary: 'Eliminar usuario definitivamente' })
+  @ApiOperation({
+    summary: 'Eliminar usuario definitivamente (solo administradores)',
+  })
   @ApiBearerAuth()
   @ApiParam({
     name: 'id',

@@ -6,7 +6,7 @@ import { DestinationsSection } from "@/components/landing/destinations-section";
 import { TestimonialsSection } from "@/components/landing/testimonials-section";
 import { CtaSection } from "@/components/landing/cta-section";
 import { Footer } from "@/components/landing/footer";
-import { ChatWidget } from "@/features/chat/components/ChatWidget";
+import { ChatWidget } from "@/features/chat/presentation/components/client/ChatWidget";
 
 export default function Home() {
   return (

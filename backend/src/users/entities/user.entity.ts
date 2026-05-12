@@ -1,22 +1,10 @@
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  CreateDateColumn,
-  UpdateDateColumn,
-} from 'typeorm';
+import { Entity, Column } from 'typeorm';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { BaseEntity } from '../../common/base/base.entity';
 import { UserRole } from '../dto/create-user.dto';
 
 @Entity('usuarios')
-export class User {
-  @ApiProperty({
-    description: 'ID del usuario',
-    example: '550e8400-e29b-41d4-a716-446655440001',
-  })
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
-
+export class User extends BaseEntity {
   @ApiProperty({
     description: 'Correo electrónico',
     example: 'ana.garcia@demo.elrecuerdo',
@@ -65,25 +53,6 @@ export class User {
   @Column({ type: 'boolean', default: true })
   activo: boolean;
 
-  @ApiProperty({
-    description: 'Fecha de creación',
-    example: '2026-04-14T08:45:11.785Z',
-  })
-  @CreateDateColumn({ name: 'created_at' })
-  createdAt: Date;
-
-  @ApiProperty({
-    description: 'Fecha de actualización',
-    example: '2026-04-14T08:45:11.785Z',
-  })
-  @UpdateDateColumn({ name: 'updated_at' })
-  updatedAt: Date;
-
-  @ApiPropertyOptional({
-    description: 'Fecha de eliminación (nullable)',
-    example: null,
-    nullable: true,
-  })
-  @Column({ name: 'deleted_at', type: 'timestamp', nullable: true })
-  deletedAt: Date | null;
+  @Column({ type: 'varchar', length: 255, nullable: true, select: false })
+  password: string | null;
 }

@@ -1,0 +1,1 @@
+export { ServiciosPageSkeleton } from './ServiciosPageSkeleton';

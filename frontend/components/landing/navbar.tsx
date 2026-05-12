@@ -8,6 +8,7 @@ const navLinks = [
   { label: "Inicio", href: "#inicio" },
   { label: "Servicios", href: "#servicios" },
   { label: "Destinos", href: "#destinos" },
+  { label: "Calendario", href: "/calendario" },
   { label: "Nosotros", href: "#nosotros" },
   { label: "Contacto", href: "#contacto" },
 ]
@@ -64,12 +65,20 @@ export function Navbar() {
         </div>
 
         {/* CTA */}
-        <a
-          href="#cotizar"
-          className="hidden md:flex items-center gap-2 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-400 hover:to-orange-500 text-white text-sm font-semibold px-5 py-2.5 rounded-full transition-all duration-300 hover:shadow-lg hover:shadow-orange-500/40 hover:-translate-y-0.5 active:translate-y-0"
-        >
-          ✈️ Cotizar Viaje
-        </a>
+        <div className="hidden md:flex items-center gap-3">
+          <a
+            href="/login"
+            className="text-white/50 hover:text-white/90 text-sm font-medium px-4 py-2 rounded-full border border-white/10 hover:border-white/20 transition-all duration-300"
+          >
+            Iniciar sesión
+          </a>
+          <a
+            href="#cotizar"
+            className="flex items-center gap-2 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-400 hover:to-orange-500 text-white text-sm font-semibold px-5 py-2.5 rounded-full transition-all duration-300 hover:shadow-lg hover:shadow-orange-500/40 hover:-translate-y-0.5 active:translate-y-0"
+          >
+            ✈️ Cotizar Viaje
+          </a>
+        </div>
 
         {/* Mobile menu button */}
         <button
@@ -125,10 +134,20 @@ export function Navbar() {
                 </motion.a>
               ))}
               <motion.a
+                href="/login"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.28 }}
+                className="text-white/60 hover:text-white font-medium px-6 py-3 rounded-full border border-white/10 text-center transition-colors"
+                onClick={() => setMenuOpen(false)}
+              >
+                Iniciar sesión
+              </motion.a>
+              <motion.a
                 href="#cotizar"
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 }}
+                transition={{ delay: 0.35 }}
                 className="bg-gradient-to-r from-orange-500 to-orange-600 text-white font-semibold px-6 py-3 rounded-full text-center mt-2"
                 onClick={() => setMenuOpen(false)}
               >

@@ -2,6 +2,12 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
+@keyframes border-beam {
+  100% {
+    offset-distance: 100%;
+  }
+}
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
@@ -161,6 +167,8 @@
     }
   }
 
+  --animate-accordion-down: accordion-down 0.2s ease-out;
+  --animate-accordion-up: accordion-up 0.2s ease-out;
   --animate-marquee: marquee var(--duration, 40s) linear infinite;
   --animate-marquee-vertical: marquee-vertical var(--duration, 40s) linear infinite;
 
@@ -282,8 +290,8 @@
   --card-foreground: oklch(0.985 0 0);
   --popover: oklch(0.12 0.02 240);
   --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
+  --primary: oklch(0.68 0.2 45);      /* brand orange */
+  --primary-foreground: oklch(0.985 0 0);
   --secondary: oklch(0.18 0.02 240);
   --secondary-foreground: oklch(0.985 0 0);
   --muted: oklch(0.18 0.02 240);
@@ -293,7 +301,7 @@
   --destructive: oklch(0.704 0.191 22.216);
   --border: oklch(1 0 0 / 8%);
   --input: oklch(1 0 0 / 12%);
-  --ring: oklch(0.556 0 0);
+  --ring: oklch(0.68 0.2 45);
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
   --chart-3: oklch(0.439 0 0);
@@ -345,6 +353,16 @@
 }
 
 /* Marquee animation — CSS puro, fuera de @theme para garantizar compatibilidad */
+@keyframes accordion-down {
+  from { height: 0; }
+  to   { height: var(--radix-accordion-content-height); }
+}
+
+@keyframes accordion-up {
+  from { height: var(--radix-accordion-content-height); }
+  to   { height: 0; }
+}
+
 @keyframes marquee {
   from { transform: translateX(0); }
   to   { transform: translateX(calc(-100% - var(--gap, 1rem))); }

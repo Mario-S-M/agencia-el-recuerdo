@@ -1,0 +1,1 @@
+export { HotelesPageSkeleton } from './HotelesPageSkeleton';

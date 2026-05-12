@@ -2,6 +2,13 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
+import { AuthModule } from './auth/auth.module';
+import { DestinosModule } from './destinos/destinos.module';
+import { ServiciosModule } from './servicios/servicios.module';
+import { PaquetesModule } from './paquetes/paquetes.module';
+import { FechasSalidaModule } from './fechas-salida/fechas-salida.module';
+import { UploadsModule } from './uploads/uploads.module';
+import { HotelesModule } from './hoteles/hoteles.module';
 import { AppDataSource } from './config/database.config';
 import { LoggerModule } from 'nestjs-pino';
 
@@ -39,6 +46,13 @@ function wait(milliseconds: number): Promise<void> {
       },
     }),
     UsersModule,
+    AuthModule,
+    DestinosModule,
+    ServiciosModule,
+    PaquetesModule,
+    FechasSalidaModule,
+    HotelesModule,
+    UploadsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
@@ -53,16 +67,11 @@ export class AppModule {
       attempt += 1
     ) {
       try {
+        if (AppDataSource.isInitialized) {
+          await AppDataSource.destroy();
+        }
         await AppDataSource.initialize();
         console.log('Connected to database:', AppDataSource.options.database);
-
-        // Ejecutar migrations si existen (opcional)
-        // await AppDataSource.query(`SET default_transaction_isolation = 'READ COMMITTED'`);
-
-        // Crear tablas automáticamente (no recomendado en producción)
-        await AppDataSource.runMigrations();
-
-        console.log('Database migrations complete');
         return;
       } catch (error: unknown) {
         lastError = error;

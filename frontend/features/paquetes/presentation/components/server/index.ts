@@ -1,0 +1,1 @@
+export { PaquetesPageSkeleton } from './PaquetesPageSkeleton';

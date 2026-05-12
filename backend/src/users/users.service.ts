@@ -1,7 +1,14 @@
-import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ConflictException,
+} from '@nestjs/common';
+import * as bcrypt from 'bcrypt';
 import { CreateUserDto, UpdateUserDto } from './dto/create-user.dto';
 import { UsersRepository } from './users.repository';
 import { User } from './entities/user.entity';
+
+const BCRYPT_SALT_ROUNDS = 12;
 
 @Injectable()
 export class UsersService {
@@ -48,21 +55,34 @@ export class UsersService {
     return this.usersRepository.findByRole(rol);
   }
 
-  // Create user
+  // Create user (solo desde panel admin)
   async create(createUserDto: CreateUserDto): Promise<User> {
     // Check if email already exists
-    const existingUser = await this.usersRepository.findByEmail(createUserDto.email);
+    const existingUser = await this.usersRepository.findByEmail(
+      createUserDto.email,
+    );
     if (existingUser) {
-      throw new ConflictException(`User with email ${createUserDto.email} already exists`);
+      throw new ConflictException(
+        `User with email ${createUserDto.email} already exists`,
+      );
     }
 
     // Generar ID si no se proporcionó
     const userId = createUserDto.id || this.generateUUID();
 
-    const newUser = {
+    const newUser: Partial<User> & { id: string } = {
       ...createUserDto,
       id: userId,
+      password: null,
     };
+
+    if (createUserDto.password) {
+      newUser.password = await bcrypt.hash(
+        createUserDto.password,
+        BCRYPT_SALT_ROUNDS,
+      );
+    }
+
     if (newUser.rol === undefined) {
       delete newUser.rol;
     }
@@ -79,16 +99,32 @@ export class UsersService {
     }
 
     // Update allowed fields
-    const allowedFields = ['nombre', 'apellidos', 'telefono', 'rol', 'avatar', 'activo'];
+    const allowedFields = [
+      'nombre',
+      'apellidos',
+      'telefono',
+      'rol',
+      'avatar',
+      'activo',
+    ];
     const updateData: Partial<User> = {};
 
     for (const field of allowedFields) {
-      if (updateUserDto[field] !== undefined) {
-        updateData[field] = updateUserDto[field];
+      if ((updateUserDto as Record<string, unknown>)[field] !== undefined) {
+        (updateData as Record<string, unknown>)[field] = (
+          updateUserDto as Record<string, unknown>
+        )[field];
       }
     }
 
-    const updatedUser = await this.usersRepository.update(id, updateData);
+    if (updateUserDto.password) {
+      updateData.password = await bcrypt.hash(
+        updateUserDto.password,
+        BCRYPT_SALT_ROUNDS,
+      );
+    }
+
+    await this.usersRepository.update(id, updateData);
     return this.findOne(id);
   }
 
@@ -111,13 +147,12 @@ export class UsersService {
     return this.findOne(id);
   }
 
-  // Permanent delete user
   async remove(id: string): Promise<void> {
     const user = await this.usersRepository.findById(id);
     if (!user) {
       throw new NotFoundException(`User with ID ${id} not found`);
     }
-    await this.usersRepository.delete(id);
+    await this.usersRepository.softDelete(id);
   }
 
   // Get statistics

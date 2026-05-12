@@ -1,0 +1,1 @@
+export { AuthPageSkeleton } from './AuthPageSkeleton';

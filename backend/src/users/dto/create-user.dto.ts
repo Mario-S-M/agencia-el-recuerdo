@@ -6,6 +6,7 @@ import {
   IsEnum,
   IsOptional,
   IsBoolean,
+  IsStrongPassword,
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
@@ -77,12 +78,30 @@ export class CreateUserDto {
   activo?: boolean;
 
   @ApiPropertyOptional({
-    description: 'UUID opcional del usuario. Si no se envía, el backend lo genera.',
+    description:
+      'UUID opcional del usuario. Si no se envía, el backend lo genera.',
     example: '550e8400-e29b-41d4-a716-446655440001',
   })
   @IsOptional()
   @IsString()
   id?: string;
+
+  @ApiPropertyOptional({
+    description:
+      'Contraseña del usuario (mín. 8 caracteres, una mayúscula, un número, un símbolo). ' +
+      'Requerida para que el usuario pueda iniciar sesión.',
+    example: 'Admin@2026!',
+    minLength: 8,
+  })
+  @IsOptional()
+  @IsStrongPassword({
+    minLength: 8,
+    minLowercase: 1,
+    minUppercase: 1,
+    minNumbers: 1,
+    minSymbols: 1,
+  })
+  password?: string;
 }
 
 export class UpdateUserDto {
@@ -139,6 +158,21 @@ export class UpdateUserDto {
   @IsOptional()
   @IsBoolean()
   activo?: boolean;
+
+  @ApiPropertyOptional({
+    description: 'Nueva contraseña del usuario',
+    example: 'NuevaClave@2026!',
+    minLength: 8,
+  })
+  @IsOptional()
+  @IsStrongPassword({
+    minLength: 8,
+    minLowercase: 1,
+    minUppercase: 1,
+    minNumbers: 1,
+    minSymbols: 1,
+  })
+  password?: string;
 }
 
 export class UserResponseDto {
