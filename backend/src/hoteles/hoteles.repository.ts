@@ -59,7 +59,8 @@ export class HotelesRepository
     const created = this.repository.create(entity);
     const saved = await this.repository.save(created);
     const result = await this.findWithRelations(saved.id);
-    if (!result) throw new NotFoundException(`Hotel recién creado no encontrado`);
+    if (!result)
+      throw new NotFoundException(`Hotel recién creado no encontrado`);
     return result;
   }
 

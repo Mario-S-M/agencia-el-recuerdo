@@ -4,13 +4,9 @@ import {
   MaxLength,
   IsOptional,
   IsBoolean,
-  IsDateString,
-  IsNumber,
   IsArray,
-  Min,
-  Matches,
+  IsUUID,
 } from 'class-validator';
-import { Type } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class CreateDestinoDto {
@@ -35,6 +31,28 @@ export class CreateDestinoDto {
   @MinLength(2)
   @MaxLength(100)
   pais: string;
+
+  @ApiPropertyOptional({
+    description: 'UUID del país en la tabla de ubicaciones',
+    example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890',
+  })
+  @IsOptional()
+  @IsUUID()
+  paisId?: string;
+
+  @ApiPropertyOptional({
+    description: 'UUID del estado/provincia',
+  })
+  @IsOptional()
+  @IsUUID()
+  estadoId?: string;
+
+  @ApiPropertyOptional({
+    description: 'UUID del municipio/ciudad',
+  })
+  @IsOptional()
+  @IsUUID()
+  municipioId?: string;
 
   @ApiPropertyOptional({
     description: 'Descripción del destino',
@@ -85,6 +103,21 @@ export class UpdateDestinoDto {
   @MinLength(2)
   @MaxLength(100)
   pais?: string;
+
+  @ApiPropertyOptional({ description: 'UUID del país' })
+  @IsOptional()
+  @IsUUID()
+  paisId?: string;
+
+  @ApiPropertyOptional({ description: 'UUID del estado/provincia' })
+  @IsOptional()
+  @IsUUID()
+  estadoId?: string;
+
+  @ApiPropertyOptional({ description: 'UUID del municipio/ciudad' })
+  @IsOptional()
+  @IsUUID()
+  municipioId?: string;
 
   @ApiPropertyOptional({ description: 'Descripción' })
   @IsOptional()

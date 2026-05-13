@@ -53,7 +53,7 @@ export function AdminHotelesPage(): React.ReactElement {
   }, []);
   const sinDestino = hoteles.filter((h) => !h.destinoId);
   if (sinDestino.length > 0) {
-    hotelesByDestino.push({ destino: { id: '', nombre: 'Sin destino', pais: '', descripcion: null, imagenes: [], destacado: false, activo: true, createdAt: '', updatedAt: '' }, hoteles: sinDestino });
+    hotelesByDestino.push({ destino: { id: '', nombre: 'Sin destino', pais: '', paisId: null, estadoId: null, municipioId: null, descripcion: null, imagenes: [], destacado: false, activo: true, createdAt: '', updatedAt: '' }, hoteles: sinDestino });
   }
 
   async function handleDelete(): Promise<void> {

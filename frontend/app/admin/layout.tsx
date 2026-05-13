@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
   LayoutDashboard, MapPin, Package, Wrench, CalendarDays,
-  Hotel, LogOut, Menu, X,
+  Hotel, Globe, Building2, LogOut, Menu, X,
 } from 'lucide-react';
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
@@ -13,6 +13,9 @@ import { useAuthStore } from '@/features/auth/presentation/store/useAuthStore';
 const NAV_ITEMS = [
   { href: '/admin', label: 'Dashboard', icon: LayoutDashboard, exact: true },
   { href: '/admin/destinos', label: 'Destinos', icon: MapPin },
+  { href: '/admin/paises', label: 'Países', icon: Globe },
+  { href: '/admin/estados', label: 'Estados', icon: Building2 },
+  { href: '/admin/municipios', label: 'Municipios', icon: MapPin },
   { href: '/admin/hoteles', label: 'Hoteles', icon: Hotel },
   { href: '/admin/paquetes', label: 'Paquetes', icon: Package },
   { href: '/admin/servicios', label: 'Servicios', icon: Wrench },

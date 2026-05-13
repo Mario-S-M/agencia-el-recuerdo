@@ -11,6 +11,9 @@ import { Hotel } from '../hoteles/entities/hotel.entity';
 import { TipoHabitacion } from '../hoteles/entities/tipo-habitacion.entity';
 import { PeriodoHotel } from '../hoteles/entities/periodo-hotel.entity';
 import { TarifaPeriodo } from '../hoteles/entities/tarifa-periodo.entity';
+import { Pais } from '../ubicaciones/entities/pais.entity';
+import { Estado } from '../ubicaciones/entities/estado.entity';
+import { Municipio } from '../ubicaciones/entities/municipio.entity';
 
 dotenv.config();
 
@@ -40,6 +43,9 @@ export const AppDataSource = new DataSource({
     TipoHabitacion,
     PeriodoHotel,
     TarifaPeriodo,
+    Pais,
+    Estado,
+    Municipio,
   ],
   synchronize: true,
   logging: false,

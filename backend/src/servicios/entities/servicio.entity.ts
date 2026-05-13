@@ -1,6 +1,9 @@
-import { Entity, Column } from 'typeorm';
+import { Entity, Column, ManyToMany } from 'typeorm';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { BaseEntity } from '../../common/base/base.entity';
+import { Paquete } from '../../paquetes/entities/paquete.entity';
+import { Municipio } from '../../ubicaciones/entities/municipio.entity';
+import { Destino } from '../../destinos/entities/destino.entity';
 
 export enum TipoServicio {
   PAQUETE_MAR = 'paquete_mar',
@@ -68,4 +71,13 @@ export class Servicio extends BaseEntity {
   @ApiProperty({ description: 'Servicio activo', example: true })
   @Column({ type: 'boolean', default: true })
   activo: boolean;
+
+  @ManyToMany(() => Paquete, (paquete) => paquete.servicios)
+  paquetes: Paquete[];
+
+  @ManyToMany(() => Destino, (destino) => destino.servicios)
+  destinos: Destino[];
+
+  @ManyToMany(() => Municipio, (municipio) => municipio.servicios)
+  municipios: Municipio[];
 }

@@ -4,6 +4,8 @@ import { Destino } from './entities/destino.entity';
 import { IDestinoRepository } from './interfaces/destino-repository.interface';
 import { BaseRepository } from '../common/base/base.repository';
 
+const DEFAULT_RELATIONS = ['paisRef', 'estadoRef', 'municipioRef'];
+
 @Injectable()
 export class DestinosRepository
   extends BaseRepository<Destino>
@@ -17,6 +19,7 @@ export class DestinosRepository
     return this.repository.find({
       where: { deletedAt: IsNull() },
       order: { nombre: 'ASC' },
+      relations: DEFAULT_RELATIONS,
     });
   }
 
@@ -24,6 +27,7 @@ export class DestinosRepository
     return this.repository.find({
       where: { activo: true, deletedAt: IsNull() },
       order: { nombre: 'ASC' },
+      relations: DEFAULT_RELATIONS,
     });
   }
 
@@ -31,6 +35,7 @@ export class DestinosRepository
     return this.repository.find({
       where: { destacado: true, activo: true, deletedAt: IsNull() },
       order: { nombre: 'ASC' },
+      relations: DEFAULT_RELATIONS,
     });
   }
 
@@ -38,6 +43,7 @@ export class DestinosRepository
     return this.repository.find({
       where: { pais, deletedAt: IsNull() },
       order: { nombre: 'ASC' },
+      relations: DEFAULT_RELATIONS,
     });
   }
 }

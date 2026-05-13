@@ -23,7 +23,7 @@ export class Paquete extends BaseEntity {
   descripcion: string | null;
 
   @ApiProperty({ type: () => Destino })
-  @ManyToOne(() => Destino, { eager: false, nullable: false })
+  @ManyToOne(() => Destino, (destino) => destino.paquetes, { nullable: false })
   @JoinColumn({ name: 'destino_id' })
   destino: Destino;
 

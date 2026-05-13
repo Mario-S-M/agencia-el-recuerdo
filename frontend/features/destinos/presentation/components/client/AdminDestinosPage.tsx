@@ -215,18 +215,18 @@ export function AdminDestinosPage(): React.ReactElement {
               </h2>
             </div>
             <div className="px-6 py-5 overflow-y-auto">
-              {formError && (
-                <div className="mb-4 flex items-center gap-2 rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-2 text-sm text-red-400">
-                  <AlertCircle className="h-4 w-4 shrink-0" />
-                  {formError}
-                </div>
-              )}
-              <DestinoForm
-                initial={editing}
-                isLoading={submitting}
-                onSubmit={handleSubmit}
-                onCancel={closeModal}
-              />
+      {formError && (
+        <div className="mb-4 flex items-center gap-2 rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-2 text-sm text-red-400">
+          <AlertCircle className="h-4 w-4 shrink-0" />
+          {formError}
+        </div>
+      )}
+      <DestinoForm
+        initial={editing && { ...editing, paisId: editing.paisId ?? '', estadoId: editing.estadoId ?? '', municipioId: editing.municipioId ?? '' }}
+        isLoading={submitting}
+        onSubmit={handleSubmit}
+        onCancel={closeModal}
+      />
             </div>
           </div>
         </div>

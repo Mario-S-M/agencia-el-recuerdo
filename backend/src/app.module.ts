@@ -9,6 +9,7 @@ import { PaquetesModule } from './paquetes/paquetes.module';
 import { FechasSalidaModule } from './fechas-salida/fechas-salida.module';
 import { UploadsModule } from './uploads/uploads.module';
 import { HotelesModule } from './hoteles/hoteles.module';
+import { UbicacionesModule } from './ubicaciones/ubicaciones.module';
 import { AppDataSource } from './config/database.config';
 import { LoggerModule } from 'nestjs-pino';
 
@@ -52,6 +53,7 @@ function wait(milliseconds: number): Promise<void> {
     PaquetesModule,
     FechasSalidaModule,
     HotelesModule,
+    UbicacionesModule,
     UploadsModule,
   ],
   controllers: [AppController],

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Loader2 } from 'lucide-react';
@@ -29,6 +29,21 @@ interface DestinoFormProps {
   onCancel: () => void;
 }
 
+interface PaisOption {
+  id: string;
+  nombre: string;
+}
+
+interface EstadoOption {
+  id: string;
+  nombre: string;
+}
+
+interface MunicipioOption {
+  id: string;
+  nombre: string;
+}
+
 export function DestinoForm({
   initial,
   isLoading,
@@ -40,6 +55,9 @@ export function DestinoForm({
     defaultValues: {
       nombre: '',
       pais: '',
+      paisId: '',
+      estadoId: '',
+      municipioId: '',
       descripcion: '',
       imagenes: [],
       destacado: false,
@@ -47,11 +65,61 @@ export function DestinoForm({
     },
   });
 
+  const [paises, setPaises] = useState<PaisOption[]>([]);
+  const [estados, setEstados] = useState<EstadoOption[]>([]);
+  const [municipios, setMunicipios] = useState<MunicipioOption[]>([]);
+  const [loadingPaises, setLoadingPaises] = useState(false);
+  const [loadingEstados, setLoadingEstados] = useState(false);
+  const [loadingMunicipios, setLoadingMunicipios] = useState(false);
+
+  const API = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001';
+
+  useEffect(() => {
+    async function loadPaises() {
+      setLoadingPaises(true);
+      try {
+        const res = await fetch(`${API}/ubicaciones/paises`);
+        if (res.ok) setPaises(await res.json() as PaisOption[]);
+      } catch { /* ignore */ } finally { setLoadingPaises(false); }
+    }
+    void loadPaises();
+  }, [API]);
+
+  const paisId = form.watch('paisId');
+  const estadoId = form.watch('estadoId');
+
+  useEffect(() => {
+    if (!paisId) { setEstados([]); setMunicipios([]); return; }
+    async function load() {
+      setLoadingEstados(true);
+      try {
+        const res = await fetch(`${API}/ubicaciones/estados/por-pais?paisId=${paisId}`);
+        if (res.ok) setEstados(await res.json() as EstadoOption[]);
+      } catch { /* ignore */ } finally { setLoadingEstados(false); }
+    }
+    void load();
+  }, [paisId, API]);
+
+  useEffect(() => {
+    if (!estadoId) { setMunicipios([]); return; }
+    async function load() {
+      setLoadingMunicipios(true);
+      try {
+        const res = await fetch(`${API}/ubicaciones/municipios/por-estado?estadoId=${estadoId}`);
+        if (res.ok) setMunicipios(await res.json() as MunicipioOption[]);
+      } catch { /* ignore */ } finally { setLoadingMunicipios(false); }
+    }
+    void load();
+  }, [estadoId, API]);
+
   useEffect(() => {
     if (initial) {
       form.reset({
         nombre: initial.nombre,
         pais: initial.pais,
+        paisId: initial.paisId ?? '',
+        estadoId: initial.estadoId ?? '',
+        municipioId: initial.municipioId ?? '',
         descripcion: initial.descripcion ?? '',
         imagenes: initial.imagenes ?? [],
         destacado: initial.destacado,
@@ -59,6 +127,13 @@ export function DestinoForm({
       });
     }
   }, [initial, form]);
+
+  useEffect(() => {
+    const selectedPais = paises.find(p => p.id === paisId);
+    if (selectedPais) {
+      form.setValue('pais', selectedPais.nombre);
+    }
+  }, [paisId, paises, form]);
 
   return (
     <Form {...form}>
@@ -88,7 +163,7 @@ export function DestinoForm({
             name="pais"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-white/80">País</FormLabel>
+                <FormLabel className="text-white/80">País (texto)</FormLabel>
                 <FormControl>
                   <Input
                     placeholder="Ej. México"
@@ -96,6 +171,80 @@ export function DestinoForm({
                     className="bg-white/5 border-white/10 text-white placeholder:text-white/30 focus-visible:border-orange-500/50"
                     {...field}
                   />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <FormField
+            control={form.control}
+            name="paisId"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-white/80">País (catálogo)</FormLabel>
+                <FormControl>
+                  <select
+                    value={field.value ?? ''}
+                    onChange={(e) => { field.onChange(e.target.value); form.setValue('estadoId', ''); form.setValue('municipioId', ''); }}
+                    disabled={isLoading || loadingPaises}
+                    className="w-full bg-white/5 border border-white/10 text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-500/50"
+                  >
+                    <option value="">Seleccionar...</option>
+                    {paises.map((p) => (
+                      <option key={p.id} value={p.id}>{p.nombre}</option>
+                    ))}
+                  </select>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="estadoId"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-white/80">Estado / Provincia</FormLabel>
+                <FormControl>
+                  <select
+                    value={field.value ?? ''}
+                    onChange={(e) => { field.onChange(e.target.value); form.setValue('municipioId', ''); }}
+                    disabled={isLoading || !paisId || loadingEstados}
+                    className="w-full bg-white/5 border border-white/10 text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-500/50"
+                  >
+                    <option value="">Seleccionar...</option>
+                    {estados.map((e) => (
+                      <option key={e.id} value={e.id}>{e.nombre}</option>
+                    ))}
+                  </select>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="municipioId"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-white/80">Municipio / Ciudad</FormLabel>
+                <FormControl>
+                  <select
+                    value={field.value ?? ''}
+                    onChange={(e) => field.onChange(e.target.value)}
+                    disabled={isLoading || !estadoId || loadingMunicipios}
+                    className="w-full bg-white/5 border border-white/10 text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-500/50"
+                  >
+                    <option value="">Seleccionar...</option>
+                    {municipios.map((m) => (
+                      <option key={m.id} value={m.id}>{m.nombre}</option>
+                    ))}
+                  </select>
                 </FormControl>
                 <FormMessage />
               </FormItem>
